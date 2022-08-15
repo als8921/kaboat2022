@@ -1,0 +1,61 @@
+<launch>
+  <arg name="UNO3_port" default="/dev/ttyACM0"/>
+  <arg name="GPS_port" default="/dev/ttyACM1"/>
+  <arg name="leaf_size" default="0.1"/>
+
+    <node name="arduino" pkg="rosserial_python" type="serial_node.py" output="screen">
+      <param name="/port" value="$(arg UNO3_port)"/>
+    </node>
+
+    <node name="ublox_gps" pkg="ublox_gps" type="ublox_gps" output="screen" clear_params="true">
+      <rosparam command="load" file="$(find ublox_gps)/config/zed-f9p.yaml"/>
+      <param name="device" value="$(arg GPS_port)"/>
+    </node>
+
+    <node name="imu" pkg="xsens_mti_driver" type="xsens_mti_node" output="screen">
+      <rosparam command="load" file="$(find xsens_mti_driver)/param/xsens_mti_node.yaml"/>
+    </node>
+<!-- check Lidar voxel grid error -->
+    <node name="lidar" pkg="rslidar_sdk" type="rslidar_sdk_node" output="screen">
+    </node>
+    <node name="voxel_grid" pkg="nodelet" type="nodelet" args="standalone pcl/VoxelGrid">
+      <remap from="~input" to="/rslidar_points"/>
+      <rosparam subst_value="true">
+        filter_field_name: ''
+        leaf_size: $(arg leaf_size)
+      </rosparam>
+    </node>
+
+    <node name="GPS_talker" pkg="kaboat2022" type="UTM_talker.py">
+    </node>
+
+    <node name="imu_talker" pkg="kaboat2022" type="IMU_Pub.py"/>
+
+    <node pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" name="pointcloud_to_laserscan">
+
+        <remap from="cloud_in" to="/voxel_grid/output"/>
+        <remap from="scan" to="/LidarLaserScan"/>
+        <rosparam>
+            transform_tolerance: 0.01
+            min_height: -1.0
+            max_height: 0.5
+
+            angle_min: -1.0471975
+            angle_max: 1.0471975
+            angle_increment: 0.01745 # M_PI/360.0
+            #scan_time: 0.3333
+            range_min: 0.85
+            range_max: 100.0
+            use_inf: true
+            inf_epsilon: 1.0
+
+            # Concurrency level, affects number of pointclouds queued for processing and number of threads used
+            # 0 : Detect number of cores
+            # 1 : Single threaded
+            # 2->inf : Parallelism level
+            concurrency_level: 1
+        </rosparam>
+    </node>
+
+    <node name="Lidar_talker" pkg="kaboat2022" type="Lidar_Pub.py"/>
+</launch>

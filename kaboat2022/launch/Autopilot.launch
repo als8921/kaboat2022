@@ -1,0 +1,4 @@
+<launch>
+  <node name="LOS_Guidance" pkg="kaboat2022" type="LOS_Guidance.py" output="screen"/>
+  <node name="PWM_Control" pkg="kaboat2022" type="PWM_Control.py" output="screen"/>
+</launch>

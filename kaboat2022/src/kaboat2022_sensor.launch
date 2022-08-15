@@ -1,0 +1,41 @@
+<launch>
+  <arg name="UNO3_port" default="/dev/ttyACM0"/>
+  <arg name="GPS_port" default="/dev/ttyACM1"/>
+  <arg name="leaf_size" default="0.1"/>
+
+  <group ns="Arduino">
+    <node name="arduino" pkg="rosserial_python" type="serial_node.py" output="screen">
+      <param name="/port" value="$(arg UNO3_port)"/>
+    </node>
+  </group>
+
+  <group ns="RTK_GPS">
+    <node name="rtk_gps" pkg="ublox_gps" type="ublox_gps" output="screen">
+      <rosparam command="load" file="$(find ublox_gps)/config/zed-f9p.yaml"/>
+      <param name="device" value="$(arg GPS_port)"/>
+    </node>
+    <node name="GPS_talker" pkg="kaboat2022" type="UTM_talker.py">
+    <!-- TODO ref_gps: rosparam setting -->
+    </node>
+  </group>
+
+  <group ns="IMU">
+    <node name="imu" pkg="xsens_mti_driver" type="xsens_mti_node" output="screen">
+      <rosparam command="load" file="$(find xsens_mti_driver)/param/xsens_mti_node.yaml"/>
+    </node>
+    <node name="imu_talker" pkg="kaboat2022" type="IMU_Pub.py"/>
+  </group>
+
+  <group ns="LiDAR">
+    <node name="lidar" pkg="rslidar_sdk" type="rslidar_sdk_node" output="screen">
+    </node>
+    <node name="voxel_grid" pkg="nodelet" type="nodelet" args="standalone pcl/VoxelGrid">
+      <remap from="~input" to="/rslidar_points"/>
+      <rosparam subst_value="true">
+        filter_field_name: ''
+        leaf_size: $(arg leaf_size)
+      </rosparam>
+    </node>
+    <node name="tf_laserscan" pkg="kaboat2022" type="PCLtoLaserScan.py" output="screen"/>
+  </group>
+</launch>

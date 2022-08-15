@@ -1,0 +1,4 @@
+<launch>
+  <node name="PathPlan" pkg="kaboat2022" type="Autonomous.py" output="screen"/>
+  <node name="PWM_Control" pkg="kaboat2022" type="PWM_Control_v2.py" output="screen"/>
+</launch>
