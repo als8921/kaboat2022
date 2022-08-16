@@ -7,25 +7,45 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from std_msgs.msg import Float64MultiArray, Float32
 
-goalPos = [8.5, 0]
+# goalPos = [27, 3]
+goalPos = [-27.582, 10.541]
 Pos = [0, 0]
 Psi = 0
-BoatWidth = 1
+Past_Psi_d = 0
+
+BoatWidth = 0.8
 
 endRange = 1
-avoidRange = 3
+avoidRange = 4
 maxRange = 20
 
 Gain_Psi = 1
-Gain_Distance = 1
+Gain_Distance = 3
+Gain_Diff = 3
 
-
+dt = 50 #ms
 lidardata = [0] * 360
 
 ax = plt.subplot(111, polar=True)
 
 data_range = np.linspace(0,2*np.pi, 360)
 plt.gcf().set_facecolor((0, 0.5, 1, 0.1))
+
+def CostFuncAngle(x):
+    x = abs(x)
+    if(x <= 10):
+        return 0.01 * x
+    else:
+        return 0.1*(x - 10)
+
+def CostFuncDistance(x):
+    if(x > 7):
+        return 0
+    else:
+        return 10 - 10/7 * x
+
+def CostFuncDiff(x):
+    return abs((x + Psi - Past_Psi_d)%180)/dt
 
 def sigmoid(x):
     return 1/(exp(-x) + 1)
@@ -40,7 +60,7 @@ def callback(data1, data2, data3):
 
 
 def animate(i):
-    # print(lidardata)
+    global Past_Psi_d
     lidarinv = [0] * 360
     ld = np.array(lidardata)
     for i in range(61, 300):
@@ -103,20 +123,22 @@ def animate(i):
     #######################################################################################################
     
     thetaList = []
-    thetaList = [[-61, 1000 * abs(-61-Goal_Psi)], [61, 1000 * abs(61-Goal_Psi)]]
+    thetaList = [[-61, 10000 * abs(-61-Goal_Psi)], [61, 10000 * abs(61-Goal_Psi)]]
     for i in range(-60, 61):
         if(safeZone[i] > 0):
-            # cost = (1 / Gain_Psi) * np.log(abs(i - Goal_Psi) + 1) + (1 / Gain_Distance) * sigmoid(1-(ld[i]/avoidRange))
-            cost = (1 / Gain_Psi) * sigmoid(abs(i - Goal_Psi)/60) + (1 / Gain_Distance) * sigmoid(1 - ld[i]/avoidRange)
+            # cost = (1 / Gain_Psi) * sigmoid(abs(i - Goal_Psi)/60) + (1 / Gain_Distance) * sigmoid(1 - ld[i]/avoidRange)
+            # cost = (1 / Gain_Psi) * sigmoid(abs(i - Goal_Psi)/60) 
+            cost = Gain_Psi * CostFuncAngle(i - Goal_Psi) + Gain_Distance * CostFuncDistance(ld[i]) + Gain_Diff * CostFuncDiff(ld[i])
             thetaList.append([i, cost])
     
     thetaList = sorted(thetaList, key = lambda x : x[1])
     Psi_d = thetaList[0][0]
+    print(Gain_Diff * CostFuncDiff(ld[Psi_d]))
 
     if(ld[Goal_Psi] > Goal_Distance):
         isSafe = True
-        for j in range((floor(Goal_Psi  - np.arctan2(BoatWidth/2, ld[i]) * 180 / np.pi)),(ceil(Goal_Psi + np.arctan2(BoatWidth/2, ld[i]) * 180 / np.pi))+1):
-            if(ld[j] < Goal_Distance):
+        for i in range((floor(Goal_Psi  - np.arctan2(BoatWidth/2, ld[Goal_Psi]) * 180 / np.pi)),(ceil(Goal_Psi + np.arctan2(BoatWidth/2, ld[Goal_Psi]) * 180 / np.pi))+1):
+            if(ld[i] < Goal_Distance):
                 isSafe = False
         if(isSafe):
             Psi_d = Goal_Psi
@@ -128,6 +150,7 @@ def animate(i):
 
     msg = Float32()
     msg.data = Psi_d + Psi
+    Past_Psi_d = msg.data
 
     if((goalPos[0]-Pos[0])*(goalPos[0]-Pos[0]) + (goalPos[1]-Pos[1])*(goalPos[1]-Pos[1]) < endRange * endRange):
         msg.data = -10000
@@ -138,12 +161,12 @@ def animate(i):
 
 
 if __name__=="__main__":
-    rospy.init_node('LidarPython11',anonymous = False)
+    rospy.init_node('Autonomous',anonymous = False)
     pub = rospy.Publisher("/Psi_d", Float32, queue_size=10)
     sub1 = message_filters.Subscriber("/LidarData", Float64MultiArray)
     sub2 = message_filters.Subscriber("/IMUData", Float32)
     sub3 = message_filters.Subscriber("/UTM", Float64MultiArray)
     mf = message_filters.ApproximateTimeSynchronizer([sub1, sub2, sub3],10,0.1,allow_headerless=True)
     mf.registerCallback(callback)
-    ani = FuncAnimation(plt.gcf(), animate, interval = 50)
+    ani = FuncAnimation(plt.gcf(), animate, interval = dt)
     plt.show()

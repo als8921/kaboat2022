@@ -6,15 +6,20 @@ import numpy as np
 from std_msgs.msg import Float64MultiArray, Float32
 
 
-psi_error_past = 0
-
-timepast = time.time()
-
+##### Parameter #####
 P_gain = 8
-D_gain = 0
+D_gain = 1
+
+tau_X = 300
+
+max_tau_N = 450
+
+speed_Constant = 1.06 #1.05 --> 1.01(more speed on rotate)
+##########
 
 tau_N = 0
-tau_X = 300
+psi_error_past = 0
+timepast = time.time()
 
 minThrust = 1050
 maxThrust = 1950
@@ -41,11 +46,9 @@ def callback(data1, data2):
     tau_N = P_gain * psi_error + D_gain * psi_error_dot
 
 
-    #1.05 --> 1.01(more speed on rotate)
-    idle_L = 1500 - tau_X * np.power(1.06,-abs(psi_error))
-    idle_R = 1500 + tau_X * np.power(1.06,-abs(psi_error))
+    idle_L = 1500 - tau_X * np.power(speed_Constant, -abs(psi_error))
+    idle_R = 1500 + tau_X * np.power(speed_Constant, -abs(psi_error))
 
-    max_tau_N = 450
     if(tau_N > max_tau_N) : tau_N = max_tau_N
     elif(tau_N < -max_tau_N): tau_N = -max_tau_N
 

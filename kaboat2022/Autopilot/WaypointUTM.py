@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import numpy as np
 import rospy
 from std_msgs.msg import Float64MultiArray
@@ -6,13 +6,6 @@ import utm
 
 ##### Setting #####
 ref_GPS = [35.0695, 128.579]
-
-# WayPoint = np.zeros([4,2])
-# WayPoint[0] = [36.3687312, 127.3452688]
-# WayPoint[1] = [36.368870, 127.345281]
-# WayPoint[2] = [36.3688497, 127.3455597]
-# WayPoint[3] = [36.368698, 127.345534]
-
 
 def callback(data):
     msg = Float64MultiArray()
@@ -28,7 +21,7 @@ def callback(data):
 
     msg.data = WP
     pub.publish(msg)
-    print(WayPoint)
+    print(WP)
         
 
 if __name__=="__main__":
