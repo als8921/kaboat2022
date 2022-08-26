@@ -1,0 +1,5 @@
+<launch>
+  <node name="Auto_Docking" pkg="v2" type="Autonomous.py" output="screen"/>
+  <node name="PWM_Control" pkg="v2" type="PWM_Control_v2.py" output="screen"/>
+  <node name="Vision_Detect" pkg="v2" type="Vision.py" output="screen"/>
+</launch>

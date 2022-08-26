@@ -1,0 +1,5 @@
+<launch>
+  <node name="Waypoint" pkg="v2" type="WaypointUTM.py" output="screen"/>
+  <node name="AutoPilot" pkg="v2" type="Autopilot2.py" output="screen"/>
+  <node name="PWM_Control" pkg="v2" type="PWM_Control_v2.py" output="screen"/>
+</launch>

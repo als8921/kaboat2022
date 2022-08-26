@@ -1,0 +1,8 @@
+prefix=/home/cnuavse/catkin_ws/devel
+
+Name: flir_camera_description
+Description: Description of flir_camera_description
+Version: 0.2.3
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 
