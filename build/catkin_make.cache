@@ -1,2 +1,0 @@
-kaboat2022:octomap_mapping/octomap_mapping:octomap_mapping/octomap_server:octomap_msgs:octomap_ros:point_cloud_converter:ros_numpy:rslidar_sdk:ublox_f9p/rtcm_msgs:ublox_f9p/ublox:ublox_f9p/ublox_gps:ublox_f9p/ublox_msgs:ublox_f9p/ublox_serialization:usb_cam:v2:xsens_ros_mti_driver
--DCATKIN_DEVEL_PREFIX=/home/cnuavse/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/cnuavse/catkin_ws/install -G Unix Makefiles

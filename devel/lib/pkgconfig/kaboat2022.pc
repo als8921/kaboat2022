@@ -1,8 +1,0 @@
-prefix=/home/cnuavse/catkin_ws/devel
-
-Name: kaboat2022
-Description: Description of kaboat2022
-Version: 0.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 

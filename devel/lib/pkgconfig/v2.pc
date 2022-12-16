@@ -1,8 +1,0 @@
-prefix=/home/cnuavse/catkin_ws/devel
-
-Name: v2
-Description: Description of v2
-Version: 0.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 

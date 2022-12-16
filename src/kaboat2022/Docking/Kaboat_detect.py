@@ -21,12 +21,12 @@ shape = 3
 WIDTH = 1920
 HEIGHT = 1080
 
-cv2.namedWindow("color_mask")
-cv2.moveWindow("color_mask", 0, 0)
-cv2.namedWindow("binary")
-cv2.moveWindow("binary", 640, 0)
-cv2.namedWindow("edges")
-cv2.moveWindow("edges", 1280, 0)
+# cv2.namedWindow("color_mask")
+# cv2.moveWindow("color_mask", 0, 0)
+# cv2.namedWindow("binary")
+# cv2.moveWindow("binary", 640, 0)
+# cv2.namedWindow("edges")
+# cv2.moveWindow("edges", 1280, 0)
 
 min_blue = np.array([110,50,0], dtype=np.uint8)
 max_blue = np.array([130, 255, 255], dtype=np.uint8)
@@ -74,7 +74,7 @@ def colorFilter(frame, color, shape):
     edges = cv2.Canny(mask_resize, 0, 255)
     test_edges = edges.copy()
     test_edges = cv2.resize(test_edges, (640, 360))
-    contours,_ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    _, contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     center_x = int(WIDTH/2)
     center_y = int(HEIGHT/2)
     #a = float(center_x)
@@ -123,7 +123,7 @@ def colorFilter(frame, color, shape):
     cv2.imshow('edges', edges)
     cv2.imshow('color_mask', color_img)
     cv2.imshow('binary', test_binary)
-    #cv2.imshow('edges', test_edges)
+    cv2.imshow('edges', test_edges)
     cv2.imshow('video', frame)
 
 
@@ -135,6 +135,10 @@ def cb(data):
     # print(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     # print(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     colorFilter(cap, color, shape)
+    if cv2.waitKey(1) == ord("q"):
+        return
+    
+    print("Processing")
 
 
 # while True:
@@ -154,3 +158,4 @@ def cb(data):
 
 rospy.init_node("Test", anonymous=False)
 rospy.Subscriber('usb_cam/image_raw', Image, cb)
+rospy.spin()

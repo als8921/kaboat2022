@@ -1,8 +1,0 @@
-prefix=/home/cnuavse/catkin_ws/devel
-
-Name: pointgrey_camera_driver
-Description: Description of pointgrey_camera_driver
-Version: 0.15.1
-Cflags: -I/home/cnuavse/catkin_ws/devel/include
-Libs: -L${prefix}/lib 
-Requires: image_exposure_msgs nodelet roscpp sensor_msgs wfov_camera_msgs
