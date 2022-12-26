@@ -64,6 +64,7 @@ void loop()
       //컨트롤러의 값 가져오기
       if (pulseIn(10,HIGH) > 0)
       {
+            //On/Off, 전/후진, 회전
             channel1 = pulseIn(8,HIGH);
             channel2 = pulseIn(9,HIGH);
             channel3 = pulseIn(10,HIGH);
