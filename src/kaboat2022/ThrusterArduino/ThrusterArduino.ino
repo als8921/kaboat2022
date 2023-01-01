@@ -14,8 +14,8 @@
 
 ros::NodeHandle  nh;    //노드 객체 생성
 
-int channel1;     //조종기
-int channel2;     //조종기
+int channel1;     //조종기 좌우 제어
+int channel2;     //조종기 전진 후진 제어
 int channel3;     //조종기 모드 제어 부분
 Servo ML, MR;     //ESC 모터 드라이버를 제어하기 위한 객체 생성
 
@@ -24,7 +24,6 @@ int Relay1 = 2; //PIN2
 int Relay2 = 3; //PIN3
 
 int count = 0;
-
 
 //모터에 신호를 전달해 주는 부분 (콜백 함수로 계속 실행됨)
 void servo_cb( const std_msgs::Float64MultiArray&msg) 

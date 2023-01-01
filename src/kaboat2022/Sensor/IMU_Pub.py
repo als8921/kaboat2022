@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# Quaternion 값으로 들어오는 IMU의 정보를 Yaw값으로 변환시켜주는 코드
+# Quaternion => Yaw(Degree)
 
 import rospy
 import tf

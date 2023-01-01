@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# 120도의 Laserscan 데이터를 360칸의 배열에 넣어 보내주는 코드
 
 import rospy
 import numpy as np

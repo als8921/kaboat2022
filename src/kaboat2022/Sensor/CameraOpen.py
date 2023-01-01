@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# 카메라를 연결하고 openCV 패키지로 여는 코드
 
 import cv2
 import numpy as np
