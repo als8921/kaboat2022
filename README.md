@@ -2,21 +2,8 @@
 
 프로그래밍 개발 환경
 
-Ubuntu 18.04
-
-ROS Melodic
-
-macOS
-
-Unity
-
----
-
--   하드웨어 설계 및 구성
--   시뮬레이터 구현
--   Rviz 시각화
--   대회 전략 및 알고리즘
--   구현
+Ubuntu 18.04 -> ROS Melodic
+macOS -> Unity
 
 # 하드웨어 구성
 
