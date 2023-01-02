@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# 최종 Docking 미션을 수행하였던 코드
+
 import rospy
 import message_filters
 import numpy as np
@@ -7,16 +9,13 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from std_msgs.msg import Float64MultiArray, Float32
 
-Docking_theta = -10
-Docking_Delta = 2.5
-Docking_Angle = -10000
+Docking_theta = -10     # Docking 진입 각도
+Docking_Delta = 2.5     # Docking Line Of Sight Delta값
+Docking_Angle = -10000  # 현재 선수각 기준 목표 도형까지의 각도 (값이 들어오지 않았을 때 초기 값 : -10000)
 
 DockFinal = []
-# DockFinal = [-16.33, 18.14]
-# DockFinal = [-13.23, 19.24]
-# DockFinal = [-10.30, 20.33]
 
-
+# 최종 Docking 목적지의 UTM 좌표를 구하여 입력해 주었음
 DockPos = [[-16.33, 18.14], [-13.23, 19.24], [-10.30, 20.33]]
 DockCnt = [0,0,0]
 
@@ -161,10 +160,12 @@ def animate(i):
     msg = Float32()
     msg.data = Psi_d + Psi
     Past_Psi_d = msg.data
+    ####################    자율운항 코드 끝    ####################
 
-    print(DockFinal)
+    # 최종 도착지가 지정되지 않았을 때
+    # print(DockFinal)
     if(DockFinal != []):
-        print(DockFinal)
+        # print(DockFinal)
         y_e = (Pos[0] - DockFinal[0]) * np.cos(Docking_theta * np.pi / 180) - (Pos[1] - DockFinal[1]) * np.sin(Docking_theta * np.pi / 180)
         DockPsi = Docking_theta - np.arctan(y_e / Docking_Delta) * 180 / np.pi
         ax.plot([0, (DockPsi-Psi) * np.pi / 180], [0,100], color = "green")
@@ -176,25 +177,34 @@ def animate(i):
             msg.data = -10000
         
         
-    print(DockCnt)
+    # print(DockCnt)
+    # 최종 도착지가 지정되었을 때
     if(DockFinal == []):
+        # 자율운항 목적지에 도착하였을 때 도킹모드를 실행
         if((goalPos[0]-Pos[0])**2 + (goalPos[1]-Pos[1])**2 < 10 ** 2):
+            # Vision 코드에서 Docking Angle 값이 넘어오는 것을 기다림
             try:
                 Docking_Angle = rospy.wait_for_message("/vision", Float32, timeout=0.1).data
             except:
                 pass
+
+            # Docking Angle이 정해졌을 때
             if Docking_Angle!=-10000:
                 Docklist = []
+                # 내 위치를 기준으로 도킹 지점들의 각도를 DockList에 저장
                 for x, y in DockPos:
                     Docklist.append(np.arctan2(x-Pos[0], y-Pos[1]) * 180 / np.pi - Psi)
 
-                # print(Docklist)
+                # 도킹 지점들의 각도와 Vision 코드에서 받은 도형 까지의 각도 차이가 가장 적은 점을 선택
                 Docklist = [abs(i-Docking_Angle) for i in Docklist]
-                DockCnt[np.argmin(Docklist)] += 1
+                DockCnt[np.argmin(Docklist)] += 1   # 각 차이가 가장 적은 각의 Count 값을 증가시킴
+
+                # 특정횟수 이상 선택되었을 경우 최종 목적지를 설정 (데이터가 잘못 선택되는 경우를 막기 위해)
                 for i in range(3):
                     if(DockCnt[i] > 20):
                         DockFinal = DockPos[i]
-                # DockFinal = DockPos[np.argmin(Docklist)]
+            # 감지되지 않았을 경우 왼쪽으로 계속 회전을 하는 명령을 주어 탐색을 기다림
+            # 파도 발생기 때문에 배가 오른쪽으로 회전을 하여 왼쪽으로 강제로 명령을 주었음                            
             else:
                 msg.data = -10
 
