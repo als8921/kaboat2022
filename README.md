@@ -18,9 +18,7 @@ Unity
 -   대회 전략 및 알고리즘
 -   구현
 
-# 1. 하드웨어 구성
-
----
+# 하드웨어 구성
 
 ## Main Sensor
 
@@ -42,8 +40,6 @@ Unity
 -   Intel NUC10i7FNH
 
 # 소프트웨어 구성
-
----
 
 ## Sensor Package
 
