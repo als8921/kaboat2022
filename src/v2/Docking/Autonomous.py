@@ -162,7 +162,7 @@ def animate(i):
     Past_Psi_d = msg.data
     ####################    자율운항 코드 끝    ####################
 
-    # 최종 도착지가 지정되지 않았을 때
+    # 최종 도착지가 지정되었을 때
     # print(DockFinal)
     if(DockFinal != []):
         # print(DockFinal)
@@ -178,7 +178,7 @@ def animate(i):
         
         
     # print(DockCnt)
-    # 최종 도착지가 지정되었을 때
+    # 최종 도착지가 지정되지 않았을 때
     if(DockFinal == []):
         # 자율운항 목적지에 도착하였을 때 도킹모드를 실행
         if((goalPos[0]-Pos[0])**2 + (goalPos[1]-Pos[1])**2 < 10 ** 2):
