@@ -40,7 +40,7 @@ macOS -> Unity
 
 3. RS-LIDAR-M1
 
-    [https://github.com/RoboSense-LiDAR/ros_rslidar](https://github.com/RoboSense-LiDAR/ros_rslidar)
+    [https://github.com/RoboSense-LiDAR/rslidar_sdk](https://github.com/RoboSense-LiDAR/rslidar_sdk)
 
 # 파일 구성
 
