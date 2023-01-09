@@ -1,0 +1,35 @@
+<launch>
+  <node name="lidar" pkg="rslidar_sdk" type="rslidar_sdk_node" output="screen"></node>
+  <node name="voxel_grid" pkg="nodelet" type="nodelet" args="standalone pcl/VoxelGrid">
+    <remap from="~input" to="/rslidar_points"/>
+    <rosparam subst_value="true">
+      filter_field_name: ''
+      leaf_size: 0.1
+    </rosparam>
+  </node>
+  <node pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" name="pointcloud_to_laserscan">
+
+      <remap from="cloud_in" to="/voxel_grid/output"/>
+      <remap from="scan" to="/LidarLaserScan"/>
+      <rosparam>
+          transform_tolerance: 0.01
+          min_height: -1.0
+          max_height: 0.5
+
+          angle_min: -1.0471975
+          angle_max: 1.0471975
+          angle_increment: 0.01745 # M_PI/360.0
+          #scan_time: 0.3333
+          range_min: 0.85
+          range_max: 100.0
+          use_inf: true
+          inf_epsilon: 1.0
+
+          # Concurrency level, affects number of pointclouds queued for processing and number of threads used
+          # 0 : Detect number of cores
+          # 1 : Single threaded
+          # 2->inf : Parallelism level
+          concurrency_level: 1
+      </rosparam>
+  </node>
+</launch>
