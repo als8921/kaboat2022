@@ -68,3 +68,36 @@ data: [1600, 1500]" -r 10
 
 
 ROS /PWM 1600, 1600 -> Serial 통신을 통해 아두이노의 Subscribe로 전달 -> 콜백함수가 돌면서 모터 회전
+
+-> PWM값으로 장난을 쳐보고 싶다.
+
+```
+import rospy 
+import time
+from std_msgs.msg import Float64MultiArray
+
+rospy.init_node("testPwmNode")
+pwmPublisher = rospy.Publisher("/PWM", Float64MultiArray, queue_size = 10)
+pwmData = Float64MultiArray()
+
+for i in range(100):
+    pwmData.data = [1500+2*i, 1500-2*i]
+    pwmPublisher.publish(pwmData)
+    time.sleep(0.02)
+
+for i in range(100, 0, -1):
+    pwmData.data = [1500+2*i, 1500-2*i]
+    pwmPublisher.publish(pwmData)
+    time.sleep(0.02)
+
+
+pwmData.data = [1500, 1500]
+pwmPublisher.publish(pwmData)
+```
+
+PWM값을 주었을 때 그 명령대로 움직이는 것을 확인
+
+
+현재 선수각, 희망 선수각 -> PWM을 정해보자!!
+
+PID제어를 통해서 Error 값을 줄이는 방향으로
